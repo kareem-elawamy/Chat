@@ -1,0 +1,63 @@
+
+<div class="flex md:h-screen">
+  <div class="flex-1 flex flex-col">
+
+    <div class="flex items-center justify-between bg-white shadow z-10 sticky top-0 p-3 border-b">
+      <div class="flex items-center">
+        <img class="h-10 w-10 rounded-full border object-cover"
+          [src]="getUserImage(auth.currentLoggedUser?.profileIamge)" alt="">
+        <div class="font-medium ml-3 text-gray-700">
+          {{ auth.currentLoggedUser?.userName }}
+        </div>
+      </div>
+      <div> 
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span class="ml-2">Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+    <div class="relative mt-4 mx-4">
+      <input [(ngModel)]="searchTerm" placeholder="search..." type="text"
+        class="w-full h-11 pl-4 pr-10 border rounded-md focus:ring-2 focus:ring-blue-500" />
+      <mat-icon class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">search</mat-icon>
+    </div>
+
+    <div class=" flex-1 p-4  h-fit overflow-y-auto">
+      <div class="flex   md:hidden gap-3 overflow-x-auto">
+        <div *ngFor="let user of filteredUsers()" class="flex-shrink-0">
+          <button (click)="selectUser(user.id)" class="relative flex flex-col items-center"
+            [class.ring-2]="receiverId === user.id" [class.ring-blue-500]="receiverId === user.id">
+            <img class="h-12 w-12 rounded-full border object-cover" [src]="getImage(user.profileIamge)" alt="">
+            <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
+              [ngClass]="user.isOnline ? 'bg-green-500' : 'bg-gray-400'"></span>
+          </button>
+        </div>
+      </div>
+      <div class="hidden md:block mt-4">
+        <div *ngFor="let user of filteredUsers()" class="mb-2">
+          <button (click)="selectUser(user.id)"
+            class="w-full flex items-center text-left px-4 py-2 rounded-lg hover:bg-blue-100"
+            [class.bg-blue-200]="receiverId === user.id">
+            <img class="h-8 w-8 rounded-full border object-cover inline-block mr-2" [src]="getImage(user.profileIamge)"
+              alt="">
+            <div class="flex-1">
+              <div class="text-sm font-medium">{{ user.fullName }}</div>
+              <p class="text-xs text-slate-400">
+                {{ user.unreadMessagesCount ? (user.unreadMessagesCount + ' unread messages') : 'No unread messages' }}
+              </p>
+            </div>
+            @if (user!.isTyping) {
+            <app-typing-indicator></app-typing-indicator>
+            }
+            <span class="inline-block w-2 h-2 rounded-full ml-2"
+              [ngClass]="user.isOnline ? 'bg-green-500' : 'bg-gray-400'"></span>
+          </button>
+        </div>
+      </div>
+    </div>

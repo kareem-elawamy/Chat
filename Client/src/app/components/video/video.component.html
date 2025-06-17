@@ -1,0 +1,26 @@
+<div class="relative h-full w-full bg-black rounded-xl overflow-hidden">
+  <video #remoteVideo autoplay playsinline class="w-full h-full object-cover bg-black"></video>
+
+  <video #localVideo autoplay playsinline muted
+    class="w-40 h-28 absolute bottom-4 right-4 border-2 border-white rounded-lg shadow-lg"></video>
+
+  <div class="absolute bottom-10 left-0 right-0 z-50 flex justify-center gap-4">
+    <button *ngIf="signalRService.incomingCall" (click)="acceptCall()"
+      class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition">
+      <mat-icon>call</mat-icon> Accept
+    </button>
+
+    <button *ngIf="signalRService.incomingCall" (click)="declineCall()"
+      class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">
+      <mat-icon>call_end</mat-icon> Decline
+    </button>
+    <button *ngIf="!signalRService.incomingCall && !signalRService.isCallActive" (click)="startCall()"
+      class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition">
+      <mat-icon>call</mat-icon> Start Call
+    </button>
+    <button *ngIf="!signalRService.incomingCall && signalRService.isCallActive" (click)="endCall()"
+      class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">
+      <mat-icon>call_end</mat-icon> End Call
+    </button>
+  </div>
+</div>

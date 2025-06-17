@@ -1,0 +1,47 @@
+<div *ngIf="chat.currentReceiverId == ''" class="flex items-center justify-center h-full bg-gray-50">
+  <p class="text-gray-400 text-lg">Please select a conversation to view messages</p>
+</div>
+
+<div *ngIf="chat.currentReceiverId != ''" class="flex flex-col h-full w-full p-4 sm:p-6 bg-white rounded-xl shadow-lg">
+  <div class="flex items-center gap-4 mb-5 border-b pb-4">
+    <img [src]="getImage(chat.receiverDetails?.profileIamge)" class="rounded-full h-12 w-12 object-cover border" alt="">
+    <div class="flex-1">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-semibold text-gray-800">{{ chat.receiverDetails?.fullName }}</h2>
+        <mat-icon (click)="display(chat.currentReceiverId)"
+          class="cursor-pointer text-blue-500 hover:text-blue-700">video_call</mat-icon>
+      </div>
+      <div class="flex items-center gap-2 mt-1">
+        <span class="w-2 h-2 rounded-full"
+          [ngClass]="chat.receiverDetails?.isOnline ? 'bg-green-500' : 'bg-gray-400'"></span>
+        <span class="text-sm text-gray-500">
+          {{ chat.receiverDetails?.isOnline ? 'Online' : 'Offline' }}
+        </span>
+      </div>
+
+      <p *ngIf="chat.receiverDetails?.isTyping" class="text-xs text-blue-500 italic mt-1 animate-pulse">
+        Typing...
+      </p>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto space-y-3 bg-gray-50 p-4 rounded-lg max-h-[70vh]">
+    <div *ngFor="let msg of chat.messages" class="flex">
+      <div class="p-3 rounded-2xl max-w-[75%] text-sm shadow-md" [ngClass]="{
+              'bg-blue-600 text-white ml-auto text-right': msg.senderId === auth.currentLoggedUser?.id,
+              'bg-white text-gray-800 mr-auto text-left border': msg.senderId !== auth.currentLoggedUser?.id
+           }">
+        <div>{{ msg.content }}</div>
+        <div class="text-[10px] mt-1 text-gray-300 text-left" *ngIf="msg.senderId === auth.currentLoggedUser?.id">
+          {{ msg.timeSent | date:'shortTime' }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex items-center gap-3 mt-4">
+    <input [(ngModel)]="messageContent" (input)="chat.notifyTyping()" type="text" placeholder="Type your message..."
+      class="flex-1 border rounded-full px-4 py-2 focus:ring-2 focus:ring-blue-500 shadow-sm" />
+    <button (click)="sendMessage()" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 shadow-md">
+      Send
+    </button>
+  </div>
+</div>

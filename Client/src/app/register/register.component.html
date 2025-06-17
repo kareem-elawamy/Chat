@@ -1,0 +1,68 @@
+<form [formGroup]="form" (ngSubmit)="register()"
+  class="min-h-screen flex flex-col md:flex-row justify-center items-center bg-gray-100 px-4 md:px-20 py-10 animate-fade-in">
+  <div
+    class="hidden md:block md:w-3/5 bg-no-repeat bg-contain bg-bottom animate-slide-left border-r-2 border-gray-200 rounded-4xl"
+    style="background-image: url('undraw_happy-announcement_23nf.png'); background-color: white; height: 707px;;">
+  </div>
+  <div
+    class="bg-white my-10 rounded-2xl w-full md:w-1/3 flex flex-col gap-4 shadow-xl p-6 animate-slide-up transition-all duration-500">
+
+    <div class="flex justify-center">
+      <img [src]="profilePicture"
+        class="rounded-full border-4 border-indigo-600 h-24 w-24 object-cover shadow-md transition hover:scale-105 duration-300" />
+    </div>
+    <h1 class="text-3xl font-extrabold text-center text-indigo-600">Create Your Account</h1>
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" placeholder="Email" required />
+      <mat-error *ngIf="form.controls['email'].errors && form.controls['email'].touched">
+        Email is required
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Full Name</mat-label>
+      <input matInput formControlName="fullName" placeholder="Full Name" required />
+      <mat-error *ngIf="form.controls['fullName'].errors && form.controls['fullName'].touched">
+        Full name is required
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>User Name</mat-label>
+      <input matInput formControlName="UserName" placeholder="User Name" required />
+      <mat-error *ngIf="form.controls['UserName'].errors?.['required'] && form.controls['UserName'].touched">
+        User name is required
+      </mat-error>
+      <mat-error *ngIf="form.controls['UserName'].errors?.['pattern'] && form.controls['UserName'].touched">
+        Only letters and digits are allowed
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput [type]="hide() ? 'text' : 'password'" formControlName="password" placeholder="Password"
+        required />
+      <button mat-icon-button matSuffix type="button" (click)="togglePassword($event)">
+        <mat-icon class="transition-transform duration-300 hover:scale-125">
+          {{ hide() ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+      </button>
+      <mat-error *ngIf="form.controls['password'].errors && form.controls['password'].touched">
+        Password is required
+      </mat-error>
+    </mat-form-field>
+    <input type="file" #pic hidden (change)="onFileSelected($event)" />
+    <button type="button" (click)="pic.click()"
+      class="w-full flex items-center justify-center gap-2 bg-green-500 text-white py-2 rounded-full shadow hover:bg-green-600 transition">
+      <mat-icon>add_a_photo</mat-icon>
+      <span>Upload Profile Picture</span>
+    </button>
+    <button type="submit"
+      class="w-full bg-indigo-600 text-white py-2 rounded-full font-semibold hover:bg-indigo-700 transition duration-200"
+      [disabled]="!form.valid">
+      Register
+    </button>
+    <p class="text-center text-sm text-gray-600">
+      Already have an account?
+      <a routerLink="/login" class="text-indigo-600 font-semibold hover:underline">Login</a>
+    </p>
+  </div>
+</form>
