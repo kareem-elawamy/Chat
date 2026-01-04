@@ -73,7 +73,7 @@ Follow these steps to set up the project locally.
 ### Installation
 1. **Backend Setup**
    ```bash
-   cd API   <-- غير الاسم هنا لنفس اسم الفولدر عندك
+   cd API  
    dotnet restore
    dotnet run
 
