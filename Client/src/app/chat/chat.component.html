@@ -1,10 +1,24 @@
-<div class="flex flex-col md:flex-row h-screen rounded-3xl">
-  <app-chat-sidebar class="bg-white border-b md:border-r md:w-1/4 w-full md:block"></app-chat-sidebar>
-  <div class="md:block md:w-2/4">
-    <app-chat-window></app-chat-window>
-  </div>
-  <div class="hidden md:block bg-gray-50 border-l md:w-1/4">
-    <app-chat-right-sideber></app-chat-right-sideber>
+<div class="flex h-screen w-full bg-[#0f172a] overflow-hidden relative">
+
+  <div class="h-full border-r border-white/5 transition-all duration-300"
+       [ngClass]="{
+         'hidden md:block w-full md:w-1/4 lg:w-[350px]': chatService.currentReceiverId !== '',
+         'w-full md:w-1/4 lg:w-[350px] block': chatService.currentReceiverId === ''
+       }">
+
+    <app-chat-sidebar class="h-full block"></app-chat-sidebar>
   </div>
 
+
+  <div class="h-full flex-1 relative transition-all duration-300"
+       [ngClass]="{
+         'hidden md:block': chatService.currentReceiverId === '',
+         'block w-full': chatService.currentReceiverId !== ''
+       }">
+
+    <app-chat-window class="h-full block"></app-chat-window>
+  </div>
+
+
+  
 </div>

@@ -1,26 +1,84 @@
-<div class="relative h-full w-full bg-black rounded-xl overflow-hidden">
-  <video #remoteVideo autoplay playsinline class="w-full h-full object-cover bg-black"></video>
+<div class="relative w-full h-full bg-[#0f172a] overflow-hidden flex flex-col items-center justify-center">
 
-  <video #localVideo autoplay playsinline muted
-    class="w-40 h-28 absolute bottom-4 right-4 border-2 border-white rounded-lg shadow-lg"></video>
-
-  <div class="absolute bottom-10 left-0 right-0 z-50 flex justify-center gap-4">
-    <button *ngIf="signalRService.incomingCall" (click)="acceptCall()"
-      class="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition">
-      <mat-icon>call</mat-icon> Accept
-    </button>
-
-    <button *ngIf="signalRService.incomingCall" (click)="declineCall()"
-      class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">
-      <mat-icon>call_end</mat-icon> Decline
-    </button>
-    <button *ngIf="!signalRService.incomingCall && !signalRService.isCallActive" (click)="startCall()"
-      class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition">
-      <mat-icon>call</mat-icon> Start Call
-    </button>
-    <button *ngIf="!signalRService.incomingCall && signalRService.isCallActive" (click)="endCall()"
-      class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">
-      <mat-icon>call_end</mat-icon> End Call
-    </button>
+  <div *ngIf="callStatus !== 'connected'" class="absolute inset-0 flex flex-col items-center justify-center z-0">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-purple-900/40 animate-pulse"></div>
+    <div class="relative z-10">
+      <div class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-20"></div>
+      <div
+        class="w-32 h-32 rounded-full bg-gray-800 border-4 border-blue-500/50 flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+        <mat-icon class="text-6xl text-gray-400 w-16 h-16 !flex !items-center !justify-center">person</mat-icon>
+      </div>
+    </div>
+    <h2 class="text-white text-xl font-light mt-6 tracking-widest animate-pulse">
+      {{ signalRService.incomingCall ? 'INCOMING CALL...' : 'CALLING...' }}
+    </h2>
   </div>
+
+  <video #remoteVideo autoplay playsinline
+    class="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
+    [ngClass]="callStatus === 'connected' ? 'opacity-100' : 'opacity-0'"></video>
+
+  <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none z-10">
+  </div>
+
+
+  <div class="absolute bottom-28 right-6 z-20 group">
+    <div
+      class="relative overflow-hidden rounded-2xl shadow-2xl border border-white/20 transition-transform duration-300 hover:scale-105 w-32 h-48 sm:w-48 sm:h-36 bg-black">
+      <video #localVideo autoplay playsinline muted class="w-full h-full object-cover"></video>
+
+      <div *ngIf="isCameraOff" class="absolute inset-0 flex items-center justify-center bg-gray-900">
+        <mat-icon class="text-white">videocam_off</mat-icon>
+      </div>
+
+      <p class="absolute bottom-2 left-2 text-[10px] text-white/80 bg-black/50 px-2 py-0.5 rounded">You</p>
+    </div>
+  </div>
+
+
+  <div #controlsBar
+    class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-4 px-6 py-4 rounded-full glass-controls shadow-2xl">
+
+    <ng-container *ngIf="signalRService.incomingCall; else activeCallControls">
+      <button (click)="acceptCall()"
+        class="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+        <mat-icon class="animate-bounce">call</mat-icon>
+      </button>
+      <button (click)="declineCall()"
+        class="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+        <mat-icon>call_end</mat-icon>
+      </button>
+    </ng-container>
+
+    <ng-template #activeCallControls>
+
+      <button *ngIf="!signalRService.isCallActive" (click)="startCall()"
+        class="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+        <mat-icon>call</mat-icon>
+      </button>
+
+      <ng-container *ngIf="signalRService.isCallActive">
+
+        <button (click)="toggleMute()"
+          class="w-12 h-12 rounded-full flex items-center justify-center transition-all border border-white/10"
+          [ngClass]="isMuted ? 'bg-white text-gray-900' : 'bg-white/10 text-white hover:bg-white/20'">
+          <mat-icon>{{ isMuted ? 'mic_off' : 'mic' }}</mat-icon>
+        </button>
+
+        <button (click)="endCall()"
+          class="w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-red-900/50 shadow-lg hover:scale-110 transition-all mx-2">
+          <mat-icon class="scale-125">call_end</mat-icon>
+        </button>
+
+        <button (click)="toggleCamera()"
+          class="w-12 h-12 rounded-full flex items-center justify-center transition-all border border-white/10"
+          [ngClass]="isCameraOff ? 'bg-white text-gray-900' : 'bg-white/10 text-white hover:bg-white/20'">
+          <mat-icon>{{ isCameraOff ? 'videocam_off' : 'videocam' }}</mat-icon>
+        </button>
+
+      </ng-container>
+    </ng-template>
+
+  </div>
+
 </div>

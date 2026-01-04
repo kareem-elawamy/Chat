@@ -1,44 +1,92 @@
-<form [formGroup]="form" #userForm="ngForm" (ngSubmit)="login()"
-  class="min-h-screen flex items-center justify-center bg-gray-100 px-4 md:px-20 py-10">
-  <div class="bg-white rounded-2xl shadow-lg flex flex-col md:flex-row overflow-hidden w-full max-w-5xl">
-    <div class="hidden md:block md:w-1/2 bg-cover bg-center" style="background-image: url('Login.png');"></div>
-    <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
-      <div class="flex justify-center mb-4">
-        <img src="loginIcon.jpg" class="rounded-full bg-blue-600 h-20 w-20 object-cover shadow-md" />
+<div class="min-h-screen w-full bg-[#0f172a] flex items-center justify-center relative overflow-hidden p-4">
+
+  <div
+    class="absolute top-0 left-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+  </div>
+  <div
+    class="absolute bottom-0 right-0 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+  </div>
+  <div
+    class="absolute -bottom-32 -left-32 w-96 h-96 bg-cyan-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000">
+  </div>
+
+  <div #loginCard
+    class="relative w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8 sm:p-10 z-10">
+
+    <div class="text-center mb-8">
+      <div
+        class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
+        <mat-icon class="text-white scale-150">lock</mat-icon>
       </div>
-      <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
+      <h2 class="text-3xl font-bold text-white tracking-tight">Welcome Back</h2>
+      <p class="text-gray-400 mt-2 text-sm">Enter your credentials to access your workspace.</p>
+    </div>
 
-      <mat-form-field class="w-full" appearance="fill">
-        <mat-label>Email</mat-label>
-        <input type="email" matInput name="email" placeholder="Email" required formControlName="email" />
-        <mat-error *ngIf="form.controls['email'].errors && form.controls['email'].touched">
-          Email is required
-        </mat-error>
-      </mat-form-field>
+    <form [formGroup]="form" (ngSubmit)="login()" class="space-y-5">
 
-      <mat-form-field class="w-full mt-4" appearance="fill">
-        <mat-label>Password</mat-label>
-        <input required matInput [type]="hide() ? 'text' : 'password'" name="password" placeholder="Password"
-          formControlName="password" />
-        <button mat-icon-button matSuffix (click)="togglePassword($event)">
-          <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
+      <div class="space-y-1">
+        <label class="text-sm font-medium text-gray-300 ml-1">Email Address</label>
+        <div class="relative group">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <mat-icon class="text-gray-500 group-focus-within:text-blue-400 transition-colors">email</mat-icon>
+          </div>
+          <input formControlName="email" type="email" placeholder="you@example.com"
+            class="w-full bg-[#1e293b]/50 border border-white/10 text-white rounded-xl py-3 pl-10 pr-4 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-gray-600"
+            [ngClass]="{'border-red-500/50': form.get('email')?.invalid && form.get('email')?.touched}">
+        </div>
+        <span *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched"
+          class="text-xs text-red-400 ml-1">Email is required</span>
+        <span *ngIf="form.get('email')?.hasError('email') && form.get('email')?.touched"
+          class="text-xs text-red-400 ml-1">Invalid email format</span>
+      </div>
 
-        <mat-error *ngIf="form.controls['password'].errors && form.controls['password'].touched">
-          Password is required
-        </mat-error>
-      </mat-form-field>
+      <div class="space-y-1">
+        <label class="text-sm font-medium text-gray-300 ml-1">Password</label>
+        <div class="relative group">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <mat-icon class="text-gray-500 group-focus-within:text-blue-400 transition-colors">lock_outline</mat-icon>
+          </div>
+          <input formControlName="password" [type]="passwordVisible ? 'text' : 'password'" placeholder="••••••••"
+            class="w-full bg-[#1e293b]/50 border border-white/10 text-white rounded-xl py-3 pl-10 pr-10 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-gray-600"
+            [ngClass]="{'border-red-500/50': form.get('password')?.invalid && form.get('password')?.touched}">
 
-      <button type="submit"
-        class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
-        [disabled]="!userForm.valid">
-        Login
+          <button type="button" (click)="togglePassword($event)"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-white transition-colors">
+            <mat-icon>{{ passwordVisible ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+        </div>
+        <span *ngIf="form.get('password')?.hasError('required') && form.get('password')?.touched"
+          class="text-xs text-red-400 ml-1">Password is required</span>
+      </div>
+
+      <div class="flex justify-end">
+        <a href="#" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Forgot Password?</a>
+      </div>
+
+      <button mat-flat-button color="primary" type="submit" [disabled]="isLoading"
+        class="w-full !h-12 !rounded-xl !bg-gradient-to-r from-blue-600 to-cyan-600 hover:!from-blue-700 hover:!to-cyan-700 !text-white !text-base shadow-lg shadow-blue-500/25 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed relative overflow-hidden">
+
+        <span *ngIf="!isLoading">Sign In</span>
+
+        <div *ngIf="isLoading" class="flex items-center justify-center gap-2">
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          Processing...
+        </div>
       </button>
 
-      <p class="text-center mt-4 text-sm text-gray-700">
-        Don't have an account?
-        <a routerLink="/register" class="text-blue-600 font-semibold hover:underline">Register</a>
-      </p>
+    </form>
+
+    <div class="mt-8 text-center text-sm text-gray-400">
+      Don't have an account?
+      <a routerLink="/register" class="text-blue-400 hover:text-blue-300 font-semibold transition-colors">Create
+        account</a>
     </div>
+
   </div>
-</form>
+</div>

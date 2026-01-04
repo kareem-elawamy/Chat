@@ -1,0 +1,47 @@
+/* تنسيق عام للحاوية */
+:host {
+  display: block;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* خطوط رسمية */
+}
+
+/* تنسيق الصورة الشخصية */
+.profile-upload-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.5rem auto;
+  cursor: pointer;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+  /* رمادي فاتح جداً */
+  transition: border-color 0.2s;
+}
+
+.profile-upload-container:hover .profile-img {
+  border-color: #1e293b;
+  /* تغيير لون الإطار عند الوقوف عليه */
+}
+
+/* أيقونة الكاميرا تظهر بشكل بسيط */
+.upload-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #1e293b;
+  /* لون داكن رسمي */
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}

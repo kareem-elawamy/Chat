@@ -1,68 +1,99 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { ValidationError } from '../Models/validation-error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgClass, NgIf } from '@angular/common';
+import gsap from 'gsap';
 
 @Component({
   selector: 'app-login',
-  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, ReactiveFormsModule, FormsModule, MatIconModule, RouterLink],
+  standalone: true,
+  imports: [ReactiveFormsModule, FormsModule, MatIconModule, RouterLink, NgIf, NgClass, MatButtonModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styles: [`
+    /* Custom Input Style to override defaults */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active{
+        -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+  `]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, AfterViewInit {
   fb = inject(FormBuilder);
   auth = inject(AuthService);
-  form !: FormGroup;
-  router = inject(Router)
-  errors!: ValidationError[]
-
-
-
+  router = inject(Router);
   snackBar = inject(MatSnackBar);
 
+  form!: FormGroup;
+  errors!: ValidationError[];
+
+  // UI States
   passwordVisible = false;
+  isLoading = false;
 
-  togglePassword(event: Event) {
-    event.preventDefault(); 
-    this.passwordVisible = !this.passwordVisible;
-  }
+  @ViewChild('loginCard') loginCard!: ElementRef;
 
-  hide(): boolean {
-    return this.passwordVisible;
-  }
-
-
-  login() {
-    this.auth.login(this.form.value).subscribe({
-      next: (res) => {
-        this.router.navigate(['/'])
-        console.log(res.message)
-        console.log(res.tokens)
-
-        this.snackBar.open(res.message, "OK", { duration: 3000 });
-
-
-      },
-      error: (er) => {
-        if (er.status == 400) {
-          this.errors = er.error
-          console.log(this.errors)
-          this.snackBar.open(er, "OK", { duration: 3000 });
-        }
-      },
-    })
-  }
   ngOnInit(): void {
     this.form = this.fb.group({
       email: ["", [Validators.required, Validators.email]],
       password: ["", Validators.required]
+    });
+  }
 
-    })
+  ngAfterViewInit() {
+    // أنيميشن دخول الكارد
+    gsap.from(this.loginCard.nativeElement, {
+      duration: 1,
+      y: 50,
+      opacity: 0,
+      ease: 'power3.out'
+    });
+  }
+
+  togglePassword(event: Event) {
+    event.preventDefault();
+    this.passwordVisible = !this.passwordVisible;
+  }
+
+  login() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true; // تفعيل حالة التحميل
+
+    this.auth.login(this.form.value).subscribe({
+      next: (res) => {
+        // أنيميشن الخروج قبل الانتقال
+        gsap.to(this.loginCard.nativeElement, {
+          y: -50,
+          opacity: 0,
+          duration: 0.5,
+          onComplete: () => {
+            this.router.navigate(['/']);
+          }
+        });
+
+        this.snackBar.open("Welcome Back! 🚀", "Dismiss", { duration: 3000, panelClass: ['bg-green-600', 'text-white'] });
+      },
+      error: (er) => {
+        this.isLoading = false; // إيقاف التحميل عند الخطأ
+        if (er.status == 400) {
+          this.errors = er.error;
+          this.snackBar.open(er.error.message || "Invalid Credentials", "Retry", { duration: 3000 });
+        } else {
+          this.snackBar.open("Something went wrong", "Close", { duration: 3000 });
+        }
+      },
+    });
   }
 }

@@ -1,68 +1,126 @@
-<form [formGroup]="form" (ngSubmit)="register()"
-  class="min-h-screen flex flex-col md:flex-row justify-center items-center bg-gray-100 px-4 md:px-20 py-10 animate-fade-in">
-  <div
-    class="hidden md:block md:w-3/5 bg-no-repeat bg-contain bg-bottom animate-slide-left border-r-2 border-gray-200 rounded-4xl"
-    style="background-image: url('undraw_happy-announcement_23nf.png'); background-color: white; height: 707px;;">
-  </div>
-  <div
-    class="bg-white my-10 rounded-2xl w-full md:w-1/3 flex flex-col gap-4 shadow-xl p-6 animate-slide-up transition-all duration-500">
+<div class="min-h-screen w-full bg-[#0f172a] flex items-center justify-center relative overflow-hidden p-4">
 
-    <div class="flex justify-center">
-      <img [src]="profilePicture"
-        class="rounded-full border-4 border-indigo-600 h-24 w-24 object-cover shadow-md transition hover:scale-105 duration-300" />
-    </div>
-    <h1 class="text-3xl font-extrabold text-center text-indigo-600">Create Your Account</h1>
-    <mat-form-field class="w-full" appearance="fill">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" placeholder="Email" required />
-      <mat-error *ngIf="form.controls['email'].errors && form.controls['email'].touched">
-        Email is required
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field class="w-full" appearance="fill">
-      <mat-label>Full Name</mat-label>
-      <input matInput formControlName="fullName" placeholder="Full Name" required />
-      <mat-error *ngIf="form.controls['fullName'].errors && form.controls['fullName'].touched">
-        Full name is required
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field class="w-full" appearance="fill">
-      <mat-label>User Name</mat-label>
-      <input matInput formControlName="UserName" placeholder="User Name" required />
-      <mat-error *ngIf="form.controls['UserName'].errors?.['required'] && form.controls['UserName'].touched">
-        User name is required
-      </mat-error>
-      <mat-error *ngIf="form.controls['UserName'].errors?.['pattern'] && form.controls['UserName'].touched">
-        Only letters and digits are allowed
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field class="w-full" appearance="fill">
-      <mat-label>Password</mat-label>
-      <input matInput [type]="hide() ? 'text' : 'password'" formControlName="password" placeholder="Password"
-        required />
-      <button mat-icon-button matSuffix type="button" (click)="togglePassword($event)">
-        <mat-icon class="transition-transform duration-300 hover:scale-125">
-          {{ hide() ? 'visibility_off' : 'visibility' }}
-        </mat-icon>
-      </button>
-      <mat-error *ngIf="form.controls['password'].errors && form.controls['password'].touched">
-        Password is required
-      </mat-error>
-    </mat-form-field>
-    <input type="file" #pic hidden (change)="onFileSelected($event)" />
-    <button type="button" (click)="pic.click()"
-      class="w-full flex items-center justify-center gap-2 bg-green-500 text-white py-2 rounded-full shadow hover:bg-green-600 transition">
-      <mat-icon>add_a_photo</mat-icon>
-      <span>Upload Profile Picture</span>
-    </button>
-    <button type="submit"
-      class="w-full bg-indigo-600 text-white py-2 rounded-full font-semibold hover:bg-indigo-700 transition duration-200"
-      [disabled]="!form.valid">
-      Register
-    </button>
-    <p class="text-center text-sm text-gray-600">
-      Already have an account?
-      <a routerLink="/login" class="text-indigo-600 font-semibold hover:underline">Login</a>
-    </p>
+  <div
+    class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
   </div>
-</form>
+  <div
+    class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+  </div>
+
+  <div #registerCard
+    class="relative w-full max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8 z-10">
+
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-white tracking-tight">Create Account</h2>
+      <p class="text-gray-400 mt-2 text-sm">Join our community and start chatting today.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="register()" class="space-y-6">
+
+      <div class="flex flex-col items-center justify-center mb-6">
+        <div class="relative group cursor-pointer w-16 h-16 z-30" (click)="triggerFileInput()">
+          <div
+            class="absolute -inset-1 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500">
+          </div>
+
+          <img [src]="imagePreview"
+            class="relative w-24 h-24 rounded-full object-cover border-4 border-[#1e293b] shadow-xl transition-transform group-hover:scale-105">
+
+          <div
+            class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+            <mat-icon class="text-white">add_a_photo</mat-icon>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-3"
+          [ngClass]="{'text-red-400': form.get('profilePicture')?.invalid && form.get('profilePicture')?.touched}">
+          {{ form.get('profilePicture')?.invalid && form.get('profilePicture')?.touched ? 'Profile picture required' :
+          'Upload Profile Picture' }}
+        </p>
+        <input type="file" #picInput accept="image/*" (change)="onFileSelected($event)" style="display: none" />
+      </div>
+
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <div class="space-y-1">
+          <label class="text-xs font-medium text-gray-300 ml-1">Full Name</label>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <mat-icon class="text-gray-500 text-sm group-focus-within:text-blue-400">badge</mat-icon>
+            </div>
+            <input formControlName="fullName" type="text" placeholder="John Doe"
+              class="w-full bg-[#1e293b]/50 border border-white/10 text-white rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-gray-600 text-sm"
+              [ngClass]="{'border-red-500/50': form.get('fullName')?.invalid && form.get('fullName')?.touched}">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-medium text-gray-300 ml-1">Username</label>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <mat-icon class="text-gray-500 text-sm group-focus-within:text-blue-400">person</mat-icon>
+            </div>
+            <input formControlName="UserName" type="text" placeholder="johndoe123"
+              class="w-full bg-[#1e293b]/50 border border-white/10 text-white rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-gray-600 text-sm"
+              [ngClass]="{'border-red-500/50': form.get('UserName')?.invalid && form.get('UserName')?.touched}">
+          </div>
+          <span *ngIf="form.get('UserName')?.hasError('duplicateUser')" class="text-[10px] text-red-400 ml-1">Username
+            already taken</span>
+        </div>
+
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-medium text-gray-300 ml-1">Email Address</label>
+        <div class="relative group">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <mat-icon class="text-gray-500 text-sm group-focus-within:text-blue-400">email</mat-icon>
+          </div>
+          <input formControlName="email" type="email" placeholder="john@example.com"
+            class="w-full bg-[#1e293b]/50 border border-white/10 text-white rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-gray-600 text-sm"
+            [ngClass]="{'border-red-500/50': form.get('email')?.invalid && form.get('email')?.touched}">
+        </div>
+        <span *ngIf="form.get('email')?.hasError('duplicateEmail')" class="text-[10px] text-red-400 ml-1">Email already
+          registered</span>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-medium text-gray-300 ml-1">Password</label>
+        <div class="relative group">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <mat-icon class="text-gray-500 text-sm group-focus-within:text-blue-400">lock</mat-icon>
+          </div>
+          <input formControlName="password" [type]="passwordVisible ? 'text' : 'password'" placeholder="••••••••"
+            class="w-full bg-[#1e293b]/50 border border-white/10 text-white rounded-xl py-2.5 pl-10 pr-10 outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-gray-600 text-sm"
+            [ngClass]="{'border-red-500/50': form.get('password')?.invalid && form.get('password')?.touched}">
+
+          <button type="button" (click)="togglePassword($event)"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-white transition-colors">
+            <mat-icon class="text-sm">{{ passwordVisible ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+        </div>
+        <span *ngIf="form.get('password')?.hasError('minlength')" class="text-[10px] text-red-400 ml-1">At least 6
+          characters</span>
+      </div>
+
+      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting"
+        class="w-full !h-11 !mt-6 !rounded-xl !bg-gradient-to-r from-indigo-600 to-purple-600 hover:!from-indigo-700 hover:!to-purple-700 !text-white !font-medium shadow-lg shadow-indigo-500/25 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed">
+
+        <span *ngIf="!isSubmitting">Create Account</span>
+
+        <div *ngIf="isSubmitting" class="flex items-center justify-center gap-2">
+          <mat-spinner diameter="20" color="warn"></mat-spinner>
+          Creating...
+        </div>
+      </button>
+
+    </form>
+
+    <div class="mt-6 text-center text-xs text-gray-400">
+      Already have an account?
+      <a routerLink="/login" class="text-blue-400 hover:text-blue-300 font-semibold transition-colors">Log in here</a>
+    </div>
+
+  </div>
+</div>
